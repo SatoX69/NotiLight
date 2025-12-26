@@ -7,6 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       
@@ -16,11 +18,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       
+      # This setup-gradle action lets us run 'gradle' directly
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.5'
 
+      # Use 'gradle' instead of './gradlew'
       - name: Build APK
         run: gradle assembleDebug
 
@@ -28,6 +32,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: app/build/outputs/apk/debug/app-debug.apk
+          name: "FlashNoti Release ${{ github.ref_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
